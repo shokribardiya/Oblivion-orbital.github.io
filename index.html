@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OBLIVION — Engineering Systems for Complex Information</title>
+<meta name="description" content="Oblivion is an independent technology collective focused on software engineering, artificial intelligence, data systems, cybersecurity research, automation, and computational systems.">
+<meta property="og:title" content="OBLIVION — Engineering Systems for Complex Information">
+<meta property="og:description" content="An independent technology collective working at the intersection of software, AI, data, and computational research.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/logo-mark.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#040405;
+    --panel:#0c0d0f;
+    --panel-2:#101214;
+    --line:#212427;
+    --ink:#f1efe9;
+    --ink-dim:#8d9096;
+    --accent:#6f8cff;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--black);color:var(--ink);font-family:'Manrope',sans-serif;overflow-x:hidden;}
+  h1,h2,h3{font-family:'Manrope',sans-serif;font-weight:700;letter-spacing:-0.01em;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  a{color:inherit;text-decoration:none;}
+  img{display:block;max-width:100%;}
+  ::selection{background:var(--accent);color:#000;}
+  @media (prefers-reduced-motion: reduce){*{animation:none !important;transition:none !important;}}
+
+  /* NAV */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:200;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:20px 48px;
+    transition:background .3s, backdrop-filter .3s, border-color .3s;
+    border-bottom:1px solid transparent;
+  }
+  nav.scrolled{background:rgba(4,4,5,0.82);backdrop-filter:blur(10px);border-color:var(--line);}
+  .brand{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:700;letter-spacing:0.06em;}
+  .brand img{width:20px;height:20px;object-fit:contain;}
+  .navlinks{display:flex;gap:34px;font-size:13px;color:var(--ink-dim);letter-spacing:0.02em;}
+  .navlinks a{transition:color .2s;position:relative;}
+  .navlinks a:hover{color:var(--ink);}
+  .navright{display:flex;align-items:center;gap:22px;font-size:13px;}
+  .navright a.ghost{color:var(--ink-dim);transition:color .2s;}
+  .navright a.ghost:hover{color:var(--ink);}
+  .navcta{border:1px solid var(--line);padding:9px 18px;font-size:13px;transition:border-color .2s,color .2s;}
+  .navcta:hover{border-color:var(--accent);color:var(--accent);}
+  #navToggle{display:none;background:none;border:none;color:var(--ink);font-size:22px;cursor:pointer;}
+  @media(max-width:900px){
+    .navlinks{display:none;}
+    nav{padding:16px 20px;}
+    #navToggle{display:block;}
+  }
+
+  /* HERO */
+  .hero{
+    position:relative;min-height:100svh;display:flex;flex-direction:column;justify-content:center;
+    padding:140px 48px 80px;overflow:hidden;
+  }
+  #graph-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:0;opacity:0.85;}
+  .hero-grid{
+    position:absolute;inset:0;z-index:0;
+    background-image:linear-gradient(var(--line) 1px, transparent 1px),linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size:56px 56px;opacity:0.22;
+    mask-image:radial-gradient(ellipse 65% 55% at 30% 40%, black 20%, transparent 72%);
+  }
+  .hero-inner{position:relative;z-index:2;max-width:760px;}
+  .eyebrow{font-size:13px;color:var(--accent);margin-bottom:22px;display:flex;align-items:center;gap:10px;letter-spacing:0.04em;}
+  .eyebrow::before{content:'';width:22px;height:1px;background:var(--accent);}
+  .hero h1{font-size:clamp(34px,5.2vw,66px);line-height:1.06;}
+  .hero p{margin-top:24px;font-size:17px;line-height:1.65;color:var(--ink-dim);max-width:560px;}
+  .hero-actions{margin-top:36px;display:flex;gap:16px;flex-wrap:wrap;}
+  .btn-primary{background:var(--ink);color:#000;padding:14px 26px;font-size:14px;font-weight:600;transition:background .2s;}
+  .btn-primary:hover{background:var(--accent);color:#000;}
+  .btn-ghost{font-size:14px;color:var(--ink-dim);padding:14px 4px;border-bottom:1px solid var(--line);transition:color .2s,border-color .2s;}
+  .btn-ghost:hover{color:var(--ink);border-color:var(--ink);}
+  .hero-wave{position:absolute;right:-4%;bottom:6%;width:46%;min-width:380px;z-index:1;opacity:0.9;pointer-events:none;}
+  @media(max-width:1100px){.hero-wave{display:none;}}
+
+  /* SECTION shell */
+  section{position:relative;padding:120px 48px;}
+  .section-head{
+    display:grid;grid-template-columns:1fr 1fr;gap:60px;margin-bottom:64px;
+    border-top:1px solid var(--line);padding-top:26px;
+  }
+  .section-head .tag{font-size:13px;color:var(--accent);margin-bottom:14px;}
+  .section-head h2{font-size:clamp(24px,3vw,38px);line-height:1.18;}
+  .section-head .desc{color:var(--ink-dim);font-size:15.5px;line-height:1.65;align-self:end;}
+  @media(max-width:820px){.section-head{grid-template-columns:1fr;gap:18px;}section{padding:80px 20px;}}
+  .container{max-width:1180px;margin:0 auto;}
+
+  /* INTRO */
+  .intro{background:var(--panel);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+  .intro .container{max-width:920px;text-align:left;}
+  .intro h2{font-size:clamp(26px,3.6vw,44px);line-height:1.2;margin-bottom:28px;}
+  .intro p{color:var(--ink-dim);font-size:16.5px;line-height:1.75;max-width:680px;margin-bottom:16px;}
+  .flow{margin-top:44px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent);}
+  .flow span.sep{color:var(--ink-dim);}
+
+  /* CAPABILITIES */
+  .cap-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);}
+  .cap-card{background:var(--black);padding:38px 32px;min-height:220px;display:flex;flex-direction:column;transition:background .25s;}
+  .cap-card:hover{background:var(--panel);}
+  .cap-id{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);margin-bottom:20px;}
+  .cap-icon{width:30px;height:30px;margin-bottom:18px;stroke:var(--ink-dim);fill:none;stroke-width:1.3;transition:stroke .25s;}
+  .cap-card:hover .cap-icon{stroke:var(--accent);}
+  .cap-card h4{font-size:18px;margin-bottom:10px;}
+  .cap-card p{color:var(--ink-dim);font-size:14px;line-height:1.6;margin-top:auto;padding-top:14px;}
+  @media(max-width:900px){.cap-grid{grid-template-columns:1fr 1fr;}}
+  @media(max-width:560px){.cap-grid{grid-template-columns:1fr;}}
+
+  /* APPROACH — vertical */
+  .approach-list{max-width:820px;margin:0 auto;}
+  .approach-item{display:grid;grid-template-columns:80px 1fr;gap:32px;padding:30px 0;border-top:1px solid var(--line);}
+  .approach-item:last-child{border-bottom:1px solid var(--line);}
+  .approach-num{font-family:'JetBrains Mono',monospace;color:var(--ink-dim);font-size:13px;padding-top:4px;}
+  .approach-item h3{font-size:19px;margin-bottom:8px;}
+  .approach-item p{color:var(--ink-dim);font-size:15px;line-height:1.65;max-width:560px;}
+  @media(max-width:600px){.approach-item{grid-template-columns:1fr;gap:8px;}}
+
+  /* TECH */
+  .tech-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:36px;}
+  .tech-col .tech-title{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);margin-bottom:18px;letter-spacing:0.03em;}
+  .tech-col ul{list-style:none;}
+  .tech-col li{color:var(--ink-dim);font-size:14.5px;padding:8px 0;border-top:1px solid var(--line);}
+  .tech-col li:first-of-type{border-top:none;}
+  @media(max-width:960px){.tech-grid{grid-template-columns:1fr 1fr;gap:40px 28px;}}
+  @media(max-width:560px){.tech-grid{grid-template-columns:1fr;}}
+
+  /* RESEARCH */
+  .research-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1px;background:var(--line);}
+  .research-card{background:var(--black);padding:30px;min-height:150px;display:flex;flex-direction:column;justify-content:space-between;transition:background .25s;}
+  .research-card:hover{background:var(--panel);}
+  .research-card h4{font-size:16.5px;font-weight:600;margin-top:14px;}
+  .status{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.05em;padding:4px 9px;border:1px solid var(--line);width:fit-content;}
+  .status.active{color:#8fd19e;border-color:#2c4a34;}
+  .status.experimental{color:var(--accent);border-color:#2a355c;}
+  .status.archived{color:var(--ink-dim);}
+
+  /* PROJECTS */
+  .projects{display:flex;flex-direction:column;}
+  .project-row{
+    display:grid;grid-template-columns:1fr 1.6fr auto;gap:36px;align-items:center;
+    padding:34px 0;border-top:1px solid var(--line);transition:background .2s;
+  }
+  .project-row:last-child{border-bottom:1px solid var(--line);}
+  .project-row:hover{background:var(--panel);}
+  .project-name{font-size:20px;font-weight:700;}
+  .project-tag{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-dim);}
+  .project-desc{color:var(--ink-dim);font-size:14.5px;line-height:1.6;}
+  @media(max-width:760px){.project-row{grid-template-columns:1fr;gap:12px;}}
+
+  /* PIPELINE */
+  .pipeline{display:flex;flex-wrap:wrap;gap:0;justify-content:center;max-width:1100px;margin:0 auto;}
+  .pipe-stage{
+    flex:1;min-width:130px;text-align:center;padding:26px 14px;border:1px solid var(--line);
+    cursor:default;position:relative;transition:border-color .2s, background .2s;
+  }
+  .pipe-stage + .pipe-stage{border-left:none;}
+  .pipe-stage:hover{border-color:var(--accent);background:var(--panel);z-index:2;}
+  .pipe-stage .lbl{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink);letter-spacing:0.03em;}
+  .pipe-desc{
+    max-width:640px;margin:34px auto 0;text-align:center;color:var(--ink-dim);font-size:14.5px;line-height:1.6;min-height:44px;
+  }
+  @media(max-width:760px){.pipeline{flex-direction:column;}.pipe-stage + .pipe-stage{border-left:1px solid var(--line);border-top:none;}}
+
+  /* SECURITY */
+  .security-wrap{display:grid;grid-template-columns:1fr 1fr;gap:60px;}
+  .security-wrap p{color:var(--ink-dim);font-size:16px;line-height:1.75;margin-bottom:16px;}
+  .sec-list{list-style:none;}
+  .sec-list li{padding:14px 0;border-top:1px solid var(--line);font-size:14.5px;color:var(--ink-dim);display:flex;justify-content:space-between;}
+  .sec-list li:last-child{border-bottom:1px solid var(--line);}
+  .sec-list li span.mono{color:var(--ink);}
+  @media(max-width:820px){.security-wrap{grid-template-columns:1fr;}}
+
+  /* TEAM */
+  .team-wrap{display:grid;grid-template-columns:1fr 1.3fr;gap:60px;}
+  .profile-card{border:1px solid var(--line);padding:36px;}
+  .profile-card h3{font-size:22px;margin-bottom:4px;}
+  .profile-role{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);margin-bottom:22px;}
+  .meta-panel{margin-top:24px;border-top:1px solid var(--line);}
+  .meta-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line);font-size:13px;}
+  .meta-row .k{color:var(--ink-dim);font-family:'JetBrains Mono',monospace;font-size:11.5px;}
+  .team-desc p{color:var(--ink-dim);font-size:16px;line-height:1.75;margin-bottom:16px;}
+  @media(max-width:820px){.team-wrap{grid-template-columns:1fr;}}
+
+  /* PHILOSOPHY */
+  .philosophy{text-align:left;max-width:820px;margin:0 auto;}
+  .philosophy h2{font-size:clamp(28px,4.2vw,46px);line-height:1.2;margin-bottom:28px;}
+  .philosophy p{color:var(--ink-dim);font-size:17px;line-height:1.8;margin-bottom:18px;}
+  .philosophy .final{color:var(--ink);font-weight:700;font-size:19px;margin-top:20px;}
+
+  /* OPEN SOURCE */
+  .oss{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:28px;border:1px solid var(--line);padding:44px;}
+  .oss p{color:var(--ink-dim);font-size:15px;max-width:520px;line-height:1.6;}
+
+  /* CONTACT */
+  .cta{text-align:center;padding:150px 24px;position:relative;}
+  .cta::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 55% 50% at 50% 40%, rgba(111,140,255,0.08), transparent 70%);}
+  .cta h2{position:relative;font-size:clamp(28px,4vw,48px);max-width:760px;margin:0 auto;line-height:1.18;}
+  .cta p{position:relative;margin-top:18px;color:var(--ink-dim);font-size:16px;}
+  .cta-actions{position:relative;margin-top:32px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
+
+  footer{border-top:1px solid var(--line);padding:48px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:28px;}
+  .fbrand{display:flex;flex-direction:column;gap:8px;}
+  .fbrand .name{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;}
+  .fbrand .name img{width:16px;height:16px;}
+  .fbrand span.sub{color:var(--ink-dim);font-size:13px;}
+  .flinks{display:flex;gap:40px;flex-wrap:wrap;}
+  .flinks a{display:block;color:var(--ink-dim);font-size:13.5px;margin-bottom:8px;transition:color .2s;}
+  .flinks a:hover{color:var(--ink);}
+  .fstatus{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-dim);display:flex;align-items:center;gap:8px;align-self:flex-end;}
+  .fstatus .dot{width:6px;height:6px;background:#8fd19e;border-radius:50%;}
+  .fbottom{max-width:1180px;margin:0 auto;padding:20px 48px 40px;color:var(--ink-dim);font-size:12.5px;}
+
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+</style>
+</head>
+<body>
+
+<nav id="mainNav">
+  <div class="brand"><img src="assets/logo-mark.png" alt="Oblivion mark"> OBLIVION</div>
+  <div class="navlinks">
+    <a href="#projects">WORK</a>
+    <a href="#research">RESEARCH</a>
+    <a href="#technology">TECHNOLOGY</a>
+    <a href="#security">SECURITY</a>
+    <a href="#team">TEAM</a>
+  </div>
+  <div class="navright">
+    <a class="ghost" href="#opensource">GITHUB</a>
+    <a class="navcta" href="#contact">CONTACT</a>
+  </div>
+</nav>
+
+<section class="hero" id="home">
+  <div class="hero-grid"></div>
+  <canvas id="graph-canvas"></canvas>
+  <div class="hero-inner">
+    <div class="eyebrow mono">OBLIVION / INDEPENDENT TECHNOLOGY COLLECTIVE</div>
+    <h1>Engineering systems for complex information.</h1>
+    <p>Oblivion is an independent technology collective focused on software engineering, artificial intelligence, data systems, cybersecurity research, automation, and computational systems.</p>
+    <div class="hero-actions">
+      <a class="btn-primary" href="#capabilities">EXPLORE OBLIVION</a>
+      <a class="btn-ghost" href="#projects">VIEW PROJECTS</a>
+    </div>
+  </div>
+  <img class="hero-wave" src="assets/hero-wave-dark.png" alt="">
+</section>
+
+<section class="intro">
+  <div class="container">
+    <h2>Complexity is not the problem.</h2>
+    <p>Modern information is fragmented across systems, datasets, documents, networks, and machines.</p>
+    <p>The challenge is not simply collecting information. The challenge is understanding how information connects.</p>
+    <p>Oblivion develops software systems designed to structure, connect, analyze, and visualize complex information.</p>
+    <div class="flow mono">OBSERVE <span class="sep">→</span> CONNECT <span class="sep">→</span> UNDERSTAND <span class="sep">→</span> BUILD</div>
+  </div>
+</section>
+
+<section id="capabilities">
+  <div class="section-head">
+    <div><div class="tag mono">WHAT WE BUILD</div><h2>Capabilities</h2></div>
+    <div class="desc">Six disciplines, applied together rather than in isolation.</div>
+  </div>
+  <div class="cap-grid">
+    <div class="cap-card">
+      <div class="cap-id mono">CAP / 01</div>
+      <svg class="cap-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      <h4>Software Engineering</h4>
+      <p>Designing and building software systems, developer tools, automation frameworks, APIs, and computational infrastructure.</p>
+    </div>
+    <div class="cap-card">
+      <div class="cap-id mono">CAP / 02</div>
+      <svg class="cap-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><circle cx="4" cy="6" r="2"/><circle cx="20" cy="6" r="2"/><circle cx="4" cy="18" r="2"/><circle cx="20" cy="18" r="2"/><path d="M9.8 10.2 5.6 7M14.2 10.2l4.2-3.2M9.8 13.8 5.6 17M14.2 13.8l4.2 3.2"/></svg>
+      <h4>Artificial Intelligence</h4>
+      <p>Researching practical AI systems, local AI infrastructure, language models, intelligent automation, and computational agents.</p>
+    </div>
+    <div class="cap-card">
+      <div class="cap-id mono">CAP / 03</div>
+      <svg class="cap-icon" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/><circle cx="19" cy="18" r="1.6"/></svg>
+      <h4>Data Systems</h4>
+      <p>Collecting, processing, structuring, indexing, and connecting large and complex datasets.</p>
+    </div>
+    <div class="cap-card">
+      <div class="cap-id mono">CAP / 04</div>
+      <svg class="cap-icon" viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 5-3.5 7.5-7 9-3.5-1.5-7-4-7-9V6l7-3z"/></svg>
+      <h4>Cybersecurity Research</h4>
+      <p>Security engineering, defensive research, system analysis, vulnerability research, and controlled security experimentation.</p>
+    </div>
+    <div class="cap-card">
+      <div class="cap-id mono">CAP / 05</div>
+      <svg class="cap-icon" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.3"/><circle cx="18" cy="6" r="2.3"/><circle cx="12" cy="18" r="2.3"/><path d="M8 7l7 9M16 7l-7 9"/></svg>
+      <h4>Graph &amp; Relationship Systems</h4>
+      <p>Representing complex relationships between entities, events, documents, systems, and datasets.</p>
+    </div>
+    <div class="cap-card">
+      <div class="cap-id mono">CAP / 06</div>
+      <svg class="cap-icon" viewBox="0 0 24 24"><path d="M4 18V9M9 18V4M14 18v-7M19 18v-3"/></svg>
+      <h4>Computational Research</h4>
+      <p>Exploring experimental algorithms, simulations, visualization systems, and emerging computational technologies.</p>
+    </div>
+  </div>
+</section>
+
+<section id="approach">
+  <div class="section-head">
+    <div><div class="tag mono">HOW WE THINK</div><h2>The Oblivion approach</h2></div>
+    <div class="desc">Five principles that guide every system we build.</div>
+  </div>
+  <div class="approach-list">
+    <div class="approach-item"><div class="approach-num mono">01</div><div><h3>First Principles</h3><p>Understand the underlying system before building abstractions around it.</p></div></div>
+    <div class="approach-item"><div class="approach-num mono">02</div><div><h3>Structure Over Noise</h3><p>Raw information becomes useful when it can be organized and interpreted.</p></div></div>
+    <div class="approach-item"><div class="approach-num mono">03</div><div><h3>Connections Matter</h3><p>The relationship between pieces of information can be as important as the information itself.</p></div></div>
+    <div class="approach-item"><div class="approach-num mono">04</div><div><h3>Security by Design</h3><p>Security belongs in the architecture, not as an afterthought.</p></div></div>
+    <div class="approach-item"><div class="approach-num mono">05</div><div><h3>Experimentation</h3><p>Ideas should be tested in real systems rather than accepted because they are conventional.</p></div></div>
+  </div>
+</section>
+
+<section id="technology">
+  <div class="section-head">
+    <div><div class="tag mono">STACK</div><h2>The technology stack</h2></div>
+    <div class="desc">Categories of tools and methods we work with, not a claim that each is a proprietary product.</div>
+  </div>
+  <div class="tech-grid">
+    <div class="tech-col"><div class="tech-title">LANGUAGES</div><ul><li>Python</li><li>JavaScript / TypeScript</li><li>HTML</li><li>CSS</li></ul></div>
+    <div class="tech-col"><div class="tech-title">AI &amp; COMPUTATION</div><ul><li>Local LLMs</li><li>Machine Learning</li><li>AI Agents</li><li>Model Orchestration</li></ul></div>
+    <div class="tech-col"><div class="tech-title">DATA</div><ul><li>Graph Systems</li><li>Data Pipelines</li><li>APIs</li><li>Information Processing</li><li>Visualization</li></ul></div>
+    <div class="tech-col"><div class="tech-title">ENGINEERING</div><ul><li>Automation</li><li>Software Architecture</li><li>Distributed Systems</li><li>Developer Infrastructure</li></ul></div>
+    <div class="tech-col"><div class="tech-title">SECURITY</div><ul><li>Security Engineering</li><li>System Analysis</li><li>Defensive Research</li><li>Controlled Testing</li></ul></div>
+  </div>
+</section>
+
+<section id="research">
+  <div class="section-head">
+    <div><div class="tag mono">OBLIVION LAB</div><h2>Research</h2></div>
+    <div class="desc">OBLIVION LAB is the experimental research environment of the organization — where ideas are tested before they become production systems, open-source tools, or internal infrastructure.</div>
+  </div>
+  <div class="research-grid">
+    <div class="research-card"><span class="status experimental mono">EXPERIMENTAL</span><h4>Artificial Intelligence</h4></div>
+    <div class="research-card"><span class="status mono active">ACTIVE</span><h4>Graph Intelligence</h4></div>
+    <div class="research-card"><span class="status experimental mono">EXPERIMENTAL</span><h4>Cybersecurity</h4></div>
+    <div class="research-card"><span class="status mono active">ACTIVE</span><h4>Visualization</h4></div>
+    <div class="research-card"><span class="status experimental mono">EXPERIMENTAL</span><h4>Automation</h4></div>
+    <div class="research-card"><span class="status mono archived">ARCHIVED</span><h4>Computer Vision</h4></div>
+    <div class="research-card"><span class="status experimental mono">EXPERIMENTAL</span><h4>Simulation</h4></div>
+    <div class="research-card"><span class="status mono active">ACTIVE</span><h4>Human–Computer Interaction</h4></div>
+    <div class="research-card"><span class="status mono active">ACTIVE</span><h4>Local Computing</h4></div>
+    <div class="research-card"><span class="status experimental mono">EXPERIMENTAL</span><h4>Developer Infrastructure</h4></div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="section-head">
+    <div><div class="tag mono">ARCHIVE</div><h2>Projects</h2></div>
+    <div class="desc">Existing, experimental, and R&amp;D-stage work. Status reflects reality, not ambition.</div>
+  </div>
+  <div class="projects">
+    <div class="project-row">
+      <div><div class="project-name">Oblivion AICP</div><div class="project-tag mono">PROJECT / AICP · STATUS / EXPERIMENTAL</div></div>
+      <div class="project-desc">AI Cinematography Platform — an experimental platform exploring artificial intelligence, visual computation, cinematography, and computational media.</div>
+      <div class="status experimental mono">EXPERIMENTAL</div>
+    </div>
+    <div class="project-row">
+      <div><div class="project-name">Oblivion Graph</div><div class="project-tag mono">PROJECT / GRAPH · STATUS / R&amp;D</div></div>
+      <div class="project-desc">Graph-based information and relationship visualization research.</div>
+      <div class="status mono" style="color:var(--ink-dim);">R&amp;D</div>
+    </div>
+    <div class="project-row">
+      <div><div class="project-name">Oblivion Local AI</div><div class="project-tag mono">PROJECT / LOCALAI · STATUS / ACTIVE</div></div>
+      <div class="project-desc">Research into locally hosted AI systems, model orchestration, automation, and privacy-oriented computation.</div>
+      <div class="status active mono">ACTIVE</div>
+    </div>
+    <div class="project-row">
+      <div><div class="project-name">Oblivion Intelligence</div><div class="project-tag mono">PROJECT / INTEL · STATUS / R&amp;D</div></div>
+      <div class="project-desc">Experimental systems for connecting heterogeneous information and representing relationships between entities, events, and datasets.</div>
+      <div class="status mono" style="color:var(--ink-dim);">R&amp;D</div>
+    </div>
+  </div>
+</section>
+
+<section id="pipeline">
+  <div class="section-head">
+    <div><div class="tag mono">SYSTEM VIEW</div><h2>From data to understanding</h2></div>
+    <div class="desc">Hover a stage to see what happens there. The conceptual pipeline behind most Oblivion systems.</div>
+  </div>
+  <div class="pipeline mono" id="pipelineStages">
+    <div class="pipe-stage" data-desc="Raw information in its original, disconnected form."><div class="lbl">DATA</div></div>
+    <div class="pipe-stage" data-desc="Gathering information from disparate sources and formats."><div class="lbl">COLLECTION</div></div>
+    <div class="pipe-stage" data-desc="Cleaning, normalizing, and preparing information for use."><div class="lbl">PROCESSING</div></div>
+    <div class="pipe-stage" data-desc="Organizing information into a coherent, navigable form."><div class="lbl">STRUCTURE</div></div>
+    <div class="pipe-stage" data-desc="Mapping how entities, events, and records connect to one another."><div class="lbl">RELATIONSHIPS</div></div>
+    <div class="pipe-stage" data-desc="Examining structured, connected information for meaning."><div class="lbl">ANALYSIS</div></div>
+    <div class="pipe-stage" data-desc="The point where information becomes something people can reason about."><div class="lbl">UNDERSTANDING</div></div>
+  </div>
+  <div class="pipe-desc" id="pipeDesc">Hover a stage above to see what happens at that point in the system.</div>
+</section>
+
+<section id="security">
+  <div class="section-head">
+    <div><div class="tag mono">SECURITY</div><h2>Security research</h2></div>
+    <div class="desc">A serious security research practice — not underground, not theatrical.</div>
+  </div>
+  <div class="security-wrap">
+    <div>
+      <p>Oblivion explores cybersecurity through defensive engineering, controlled experimentation, vulnerability research, system analysis, and security architecture.</p>
+      <p>Research is conducted only within authorized and controlled environments.</p>
+    </div>
+    <ul class="sec-list">
+      <li><span class="mono">01</span><span>Responsible Disclosure</span></li>
+      <li><span class="mono">02</span><span>Defensive Engineering</span></li>
+      <li><span class="mono">03</span><span>System Hardening</span></li>
+      <li><span class="mono">04</span><span>Security Architecture</span></li>
+      <li><span class="mono">05</span><span>Controlled Testing</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="team">
+  <div class="section-head">
+    <div><div class="tag mono">PEOPLE</div><h2>The team</h2></div>
+    <div class="desc">Oblivion is an independent collective of programmers, engineers, researchers, and technology enthusiasts working across software, artificial intelligence, data, cybersecurity, and computational systems.</div>
+  </div>
+  <div class="team-wrap">
+    <div class="profile-card">
+      <h3>Bardia Shokri</h3>
+      <div class="profile-role mono">FOUNDER / LEAD ENGINEER</div>
+      <div class="meta-panel">
+        <div class="meta-row"><span class="k">ROLE</span><span>Founder / Lead Engineer</span></div>
+        <div class="meta-row"><span class="k">FOCUS</span><span>AI / Software / Data / Security</span></div>
+        <div class="meta-row"><span class="k">ORGANIZATION</span><span>Oblivion</span></div>
+      </div>
+    </div>
+    <div class="team-desc">
+      <p>Founder and lead engineer responsible for the architectural direction, research initiatives, and development of core Oblivion systems.</p>
+      <p>Software developer and technology researcher focused on artificial intelligence, software systems, data infrastructure, cybersecurity research, automation, and experimental computing.</p>
+      <p style="color:var(--ink-dim);font-size:14px;">Additional members will be added here as the collective grows.</p>
+    </div>
+  </div>
+</section>
+
+<section class="philosophy-section">
+  <div class="philosophy">
+    <div class="tag mono" style="color:var(--accent);margin-bottom:14px;">MANIFESTO</div>
+    <h2>Build systems that make complexity visible.</h2>
+    <p>The world produces more information than any individual can meaningfully process.</p>
+    <p>Systems should not simply collect information. They should help us understand it.</p>
+    <p>Oblivion explores software that reveals relationships, structures complexity, and turns fragmented information into something people can reason about.</p>
+    <p class="final">Complexity should become understandable.</p>
+  </div>
+</section>
+
+<section id="opensource">
+  <div class="section-head">
+    <div><div class="tag mono">OPEN ENGINEERING</div><h2>Open source</h2></div>
+    <div class="desc"></div>
+  </div>
+  <div class="oss">
+    <p>Selected tools, experiments, and research projects may be published through the Oblivion engineering repositories.</p>
+    <a class="navcta" href="#" id="githubLink">VIEW GITHUB</a>
+  </div>
+</section>
+
+<section class="cta" id="contact">
+  <h2>Build something interesting.</h2>
+  <p>For technical collaboration, research, engineering, or project inquiries.</p>
+  <div class="cta-actions">
+    <a class="btn-primary" href="mailto:contact@oblivion.dev">CONTACT OBLIVION</a>
+    <a class="btn-ghost" href="#" id="githubLink2">GITHUB</a>
+  </div>
+</section>
+
+<footer>
+  <div class="fbrand">
+    <div class="name"><img src="assets/logo-mark.png" alt=""> OBLIVION</div>
+    <span class="sub">Independent Technology Collective</span>
+  </div>
+  <div class="flinks">
+    <div><a href="#capabilities">Software</a><a href="#capabilities">AI</a><a href="#capabilities">Data</a></div>
+    <div><a href="#security">Security</a><a href="#research">Research</a></div>
+    <div><a href="#opensource">GitHub</a><a href="#contact">Contact</a></div>
+  </div>
+  <div class="fstatus"><span class="dot"></span>SYSTEM STATUS: OPERATIONAL</div>
+</footer>
+<div class="fbottom mono">© 2026 Oblivion</div>
+
+<script>
+  // Nav scroll state
+  const nav = document.getElementById('mainNav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 30);
+  }, { passive:true });
+
+  // Pipeline hover descriptions
+  const pipeDesc = document.getElementById('pipeDesc');
+  document.querySelectorAll('.pipe-stage').forEach(stage => {
+    stage.addEventListener('mouseenter', () => { pipeDesc.textContent = stage.dataset.desc; });
+    stage.addEventListener('focus', () => { pipeDesc.textContent = stage.dataset.desc; });
+  });
+
+  // Node graph visualization — restrained, performance-conscious
+  const canvas = document.getElementById('graph-canvas');
+  const ctx = canvas.getContext('2d');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let W, H, nodes = [];
+  const NODE_COUNT = 46;
+  const MAX_DIST = 150;
+  let mouse = { x: -9999, y: -9999 };
+
+  function resize(){
+    W = canvas.width = canvas.offsetWidth * devicePixelRatio;
+    H = canvas.height = canvas.offsetHeight * devicePixelRatio;
+    canvas.style.width = canvas.offsetWidth + 'px';
+  }
+  function initNodes(){
+    nodes = [];
+    for(let i=0;i<NODE_COUNT;i++){
+      nodes.push({
+        x: Math.random()*W, y: Math.random()*H,
+        vx: (Math.random()-0.5)*0.15*devicePixelRatio,
+        vy: (Math.random()-0.5)*0.15*devicePixelRatio
+      });
+    }
+  }
+
+  function drawStatic(){
+    // fallback: draw one still frame, no animation loop
+    ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle = 'rgba(111,140,255,0.18)';
+    ctx.fillStyle = 'rgba(241,239,233,0.5)';
+    for(let i=0;i<nodes.length;i++){
+      const a = nodes[i];
+      ctx.beginPath(); ctx.arc(a.x,a.y,1.6*devicePixelRatio,0,7); ctx.fill();
+      for(let j=i+1;j<nodes.length;j++){
+        const b = nodes[j];
+        const d = Math.hypot(a.x-b.x,a.y-b.y);
+        if(d < MAX_DIST*devicePixelRatio){
+          ctx.globalAlpha = 1 - d/(MAX_DIST*devicePixelRatio);
+          ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+        }
+      }
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function frame(){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle = 'rgba(241,239,233,0.55)';
+    for(let i=0;i<nodes.length;i++){
+      const a = nodes[i];
+      a.x += a.vx; a.y += a.vy;
+      if(a.x<0||a.x>W) a.vx*=-1;
+      if(a.y<0||a.y>H) a.vy*=-1;
+
+      const dMouse = Math.hypot(a.x-mouse.x, a.y-mouse.y);
+      if(dMouse < 160*devicePixelRatio){
+        const f = (1 - dMouse/(160*devicePixelRatio)) * 0.02;
+        a.x += (a.x-mouse.x)*f*0.02;
+        a.y += (a.y-mouse.y)*f*0.02;
+      }
+
+      ctx.beginPath(); ctx.arc(a.x,a.y,1.6*devicePixelRatio,0,7); ctx.fill();
+
+      for(let j=i+1;j<nodes.length;j++){
+        const b = nodes[j];
+        const d = Math.hypot(a.x-b.x,a.y-b.y);
+        if(d < MAX_DIST*devicePixelRatio){
+          const alpha = (1 - d/(MAX_DIST*devicePixelRatio)) * 0.5;
+          ctx.strokeStyle = `rgba(111,140,255,${alpha})`;
+          ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  function setup(){
+    resize(); initNodes();
+    if(reduceMotion){ drawStatic(); }
+    else { frame(); }
+  }
+  window.addEventListener('resize', () => { resize(); initNodes(); if(reduceMotion) drawStatic(); });
+  canvas.addEventListener('mousemove', e => {
+    const r = canvas.getBoundingClientRect();
+    mouse.x = (e.clientX - r.left) * devicePixelRatio;
+    mouse.y = (e.clientY - r.top) * devicePixelRatio;
+  });
+  canvas.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; });
+  setup();
+</script>
+</body>
+</html>
